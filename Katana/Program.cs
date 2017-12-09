@@ -31,6 +31,25 @@ namespace Katana
     {
         public void Configuration(IAppBuilder app)
         {
+            app.Use(async (environment, next) =>
+            {
+                foreach (var keyValuePair in environment.Environment)
+                {
+                    Console.WriteLine($"{keyValuePair.Key}:{keyValuePair.Value}");
+                }
+
+                await next();
+            });
+
+            app.Use(async (environment, next) =>
+            {
+                Console.WriteLine($"Requesting: {environment.Request.Path}");
+
+                await next();
+
+                Console.WriteLine($"Status Code:{environment.Response.StatusCode}");
+            });
+
             app.UseHelloWorld();
             //app.Use<HellowWorldComponent>();
             //app.UseWelcomePage();
