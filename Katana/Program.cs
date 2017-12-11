@@ -6,26 +6,27 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web.Http;
 
 namespace Katana
 {
     using AppFunc = Func<IDictionary<string, object>, Task>;
 
-    class Program
-    {
-        static void Main(string[] args)
-        {
-            string uri = "http://localhost:8080";
+    //class Program
+    //{
+    //    static void Main(string[] args)
+    //    {
+    //        string uri = "http://localhost:8080";
 
-            using (WebApp.Start<Startup>(uri))
-            {
-                Console.WriteLine("Server Started!!");
-                Console.ReadKey();
-                Console.WriteLine("Server Stopped :( ");
+    //        using (WebApp.Start<Startup>(uri))
+    //        {
+    //            Console.WriteLine("Server Started!!");
+    //            Console.ReadKey();
+    //            Console.WriteLine("Server Stopped :( ");
 
-            }
-        }
-    }
+    //        }
+    //    }
+    //}
 
     public class Startup
     {
@@ -50,6 +51,8 @@ namespace Katana
                 Console.WriteLine($"Status Code:{environment.Response.StatusCode}");
             });
 
+            ConfigureWebApi(app);
+
             app.UseHelloWorld();
             //app.Use<HellowWorldComponent>();
             //app.UseWelcomePage();
@@ -57,6 +60,17 @@ namespace Katana
             ////{
             ////    return ctx.Response.WriteAsync("Hello World");
             ////});
+        }
+
+        private void ConfigureWebApi(IAppBuilder app)
+        {
+            var httpconfig = new HttpConfiguration();
+            httpconfig.Routes.MapHttpRoute(
+                "DefaultApi", 
+                "api/{controller}/{id}",
+                new { id = RouteParameter.Optional});
+
+            app.UseWebApi(httpconfig);
         }
     }
 
